@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "Basic EC2"
+Resources:
+  myEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: "wordpress"
+      ImageId: ami-00068cd7555f543d5
+      InstanceType: "t2.nano"
+      SecurityGroupIds:
+        - sg-03ce862b97428f32f
+      Tags:
+        - Key: "Name"
+          Value: "EC2yaml"

@@ -1,0 +1,26 @@
+
+How to Launch a basic EC2 instance, and ssh into it with Linux
+
+1.) Log onto the AWS console and create an account if you do not already have one.
+2.) Click on the blue "Launch Instance." It will walk you through the next steps to enter in what configuration details you would like, such as security and storage. For this example I used what was already filled out for me, except when we get to security. 
+
+3.) I plan to use this instance for my wordpress blog, so I need to allow webtraffic into the instance. I can do this by adding another security rule to allow connections through port 80.
+
+4.) If this is your first time creating an instance you may need to download a new key pair. These key pairs allow you securely ssh into your instance. Make sure to download the key pair, because once click onto the next screen you will be unable to go back to them. It is needed for ssh'ing.
+
+5.) Once you have configured the instance to your specifications, you can launch it. It may take a few minutes.
+
+6.) The instance is ready when you see under the instance state that it is running. The public IP address should also be available under "Description." 
+
+7.) When ready, open a terminal. We need to make sure we have the correct permissions on the file for the key pairs, so use the following:
+	chmod 400 (direct pathway of where you key file is. The .pem file)
+
+8.) Copy the public IP address from your EC2 instance. Paste it into the following command:
+	ssh -i {full path of your .pem file} ec2-user@{instance IP address}
+
+9.) You should see a respond asking the authenticity of the host, type yes and press enter. This will permanetly add the IP address to known hosts. 
+
+Step by Step instructions followed from: 
+https://aws.amazon.com/getting-started/tutorials/launch-a-virtual-machine/
+
+ 

@@ -1,0 +1,133 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Practice CloudFormation",
+  "Parameters": {
+    "InstanceTypeParameter": {
+      "Type": "String",
+      "Default": "t2.micro",
+      "AllowedValues": [
+        "t2.micro",
+        "m1.small",
+        "m1.large"
+      ],
+      "Description": "Enter t2.micro, m1.small, or m1.large. Default is t2.micro."
+    },
+    "InstanceSSHKey": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Description": "SSH key to launch instance with"
+    },
+    "InstanceName": {
+      "Type": "String",
+      "Description": "Enter the name for the EC2 Insta."
+    },
+    "InstanceSubnetID": {
+      "Type": "String",
+      "AllowedValues": [
+        "subnet-20a7646d",
+        "subnet-2cbf4a22",
+        "subnet-874a76db"
+      ],
+      "Description": "Enter subnet-20a7646d US-east-1a, subnet-2cbf4a22 US-east-1f, or subnet-874a76d US-east-1b"
+    },
+    "InstanceSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup::Id",
+      "Description": "Security groups for EC2 instance."
+    }
+  },
+  "Resources": {
+    "myEc2Instance1": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "KeyName": {
+          "Ref": "InstanceSSHKey"
+        },
+        "ImageId": "ami-00068cd7555f543d5",
+        "InstanceType": {
+          "Ref": "InstanceTypeParameter"
+        },
+        "SubnetId": {
+          "Ref": "InstanceSubnetID"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "InstanceSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${InstanceName}1"
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": "#!/bin/bash\n\nyum install httpd -y\nsystemctl enable httpd\nsystemctl start httpd\necho \"hello from test 1\" > /var/www/html/index.html\n"
+        }
+      }
+    },
+    "myEc2Instance2": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "KeyName": {
+          "Ref": "InstanceSSHKey"
+        },
+        "ImageId": "ami-00068cd7555f543d5",
+        "InstanceType": {
+          "Ref": "InstanceTypeParameter"
+        },
+        "SubnetId": {
+          "Ref": "InstanceSubnetID"
+        },
+        "SecurityGroupIds": [
+          {
+            "Ref": "InstanceSecurityGroup"
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Sub": "${InstanceName}2"
+            }
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": "#!/bin/bash\n\nyum install httpd -y\nsystemctl enable httpd\nsystemctl start httpd\necho \"hello from test 2\" > /var/www/html/index.html\n"
+        }
+      }
+    },
+    "myELB": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "Instances": [
+          {
+            "Ref": "myEc2Instance1"
+          },
+          {
+            "Ref": "myEc2Instance2"
+          }
+        ],
+        "SecurityGroups": [
+          {
+            "Ref": "InstanceSecurityGroup"
+          }
+        ],
+        "Subnets": [
+          {
+            "Ref": "InstanceSubnetID"
+          }
+        ],
+        "Listeners": [
+          {
+            "InstancePort": "80",
+            "InstanceProtocol": "HTTP",
+            "LoadBalancerPort": "80",
+            "Protocol": "HTTP"
+          }
+        ],
+        "LoadBalancerName": "ELB"
+      }
+    }
+  }
+}
